@@ -102,6 +102,16 @@
   animation: fadeInUp 0.8s ease forwards;
 }
 
+@keyframes gridScanFallback {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+
+  100% {
+    background-position: 0 -160px, 0 0;
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

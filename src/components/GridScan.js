@@ -1,10 +1,47 @@
 "use client";
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Bloom, EffectComposer, Noise, ChromaticAberration } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
+// ─── WebGL detection helper ──────────────────────────────────────────────────
+function isWebGLAvailable() {
+    if (typeof window === 'undefined') return false;
+    try {
+        const canvas = document.createElement('canvas');
+        return !!(
+            window.WebGLRenderingContext &&
+            (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+        );
+    } catch {
+        return false;
+    }
+}
+
+// ─── CSS fallback grid (no WebGL required) ───────────────────────────────────
+const CSSGridFallback = ({ linesColor }) => (
+    <div
+        style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            inset: 0,
+            zIndex: -10,
+            pointerEvents: 'none',
+            opacity: 0.5,
+            background: '#050505',
+            backgroundImage: `
+                linear-gradient(${linesColor}55 1px, transparent 1px),
+                linear-gradient(90deg, ${linesColor}55 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+            animation: 'gridScanFallback 4s linear infinite',
+        }}
+    />
+);
+
+// ─── Three.js grid mesh ───────────────────────────────────────────────────────
 const Grid = ({ sensitivity, lineThickness, linesColor, gridScale }) => {
     const meshRef = useRef();
 
@@ -62,6 +99,7 @@ const Grid = ({ sensitivity, lineThickness, linesColor, gridScale }) => {
     );
 };
 
+// ─── Main component ───────────────────────────────────────────────────────────
 const GridScan = ({
     sensitivity = 0.55,
     lineThickness = 1,
@@ -74,9 +112,31 @@ const GridScan = ({
     chromaticAberration = 0.002,
     noiseIntensity = 0.01
 }) => {
+    // Detect WebGL support on the client only
+    const [webGLSupported, setWebGLSupported] = useState(true);
+
+    useEffect(() => {
+        setWebGLSupported(isWebGLAvailable());
+    }, []);
+
+    // CSS-only fallback when WebGL is unavailable
+    if (!webGLSupported) {
+        return <CSSGridFallback linesColor={linesColor} />;
+    }
+
     return (
         <div className="w-full h-full absolute inset-0 -z-10 pointer-events-none opacity-50">
-            <Canvas camera={{ position: [0, 10, 20], fov: 50 }}>
+            <Canvas
+                camera={{ position: [0, 10, 20], fov: 50 }}
+                onCreated={({ gl }) => {
+                    // Extra safety: if context was somehow lost after creation
+                    gl.domElement.addEventListener('webglcontextlost', (e) => {
+                        e.preventDefault();
+                        console.warn('GridScan: WebGL context lost — falling back to CSS.');
+                        setWebGLSupported(false);
+                    });
+                }}
+            >
                 <color attach="background" args={['#050505']} />
                 <ambientLight intensity={1} />
                 <Grid

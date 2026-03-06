@@ -1,15 +1,4 @@
 import Link from 'next/link';
-import { Search, TrendingUp, Target, BarChart, ArrowRight, MousePointer2, Globe, Monitor } from 'lucide-react';
-
-export const metadata = {
-    title: "Professional SEO Services in Noida | Rank #1 on Google",
-    description: "Boost your visibility with the best SEO services in Noida. We specialize in local SEO, technical optimization, and high-authority link building to dominate Noida search results.",
-    alternates: {
-        canonical: "https://Zentavo Tech.com/services/seo-services-noida",
-    },
-};
-
-import Link from 'next/link';
 import { Search, TrendingUp, Target, BarChart, ArrowRight, MousePointer2, Globe, Monitor, Shield, Zap } from 'lucide-react';
 import JsonLd from '@/components/JsonLd';
 
