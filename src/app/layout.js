@@ -15,7 +15,7 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://ZentavoTech.com"),
+  metadataBase: new URL("https://https://zentavo-tech-hub.vercel.app/"),
   title: {
     default: "WebNoida | #1 Web Development & SEO Agency India",
     template: "%s | WebNoida Digital",
@@ -55,6 +55,9 @@ export const metadata = {
     title: "WebNoida - #1 Web & SEO Agency",
     description: "Build your digital empire with world-class web development and SEO experts.",
     images: ["/og-image.jpg"],
+  },
+  verification: {
+    google: "your_verification_id_here", // Replace with your actual ID or use process.env.NEXT_PUBLIC_GSC_VERIFICATION_ID
   },
   robots: {
     index: true,
